@@ -1,0 +1,28 @@
+installation du packet dhcp : 
+apt-get install isc-dhcp-server
+
+on edit le fichier 
+nano /etc/network/interfaces
+
+
+allow-hotplug ens33
+auto ens33 #auto pour le monter automatiquement
+iface ens33 inet static #Static pour enlever le dhcp
+address 192.168.5.254/24 #ip du dhcp
+gateway 192.168.5.2  #Ip de la gateway
+
+
+nano /etc/dhcp/dhcpd.conf
+
+subnet 192.168.5.0 netmask 255.255.255.0 {
+range 192.168.5.50 192.168.5.100; #range d'adresse ip
+option domain-name-servers 10.10.0.1, 8.8.8.8; #IP du serveur dns
+option routers 192.168.5.2;	#L'adresse ip de la gateway
+option broadcast-address 192.168.5.255;	#Toujours .255
+}
+
+on edit le fichier
+nano /etc/default/isc-dhcp-server
+
+INTERFACESv4="ens33" #ip a pour trouver le nom de la carte souhaiter
+#INTERFACESv6="" #on met pas de v6 pour le moment
