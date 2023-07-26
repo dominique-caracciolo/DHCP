@@ -1,0 +1,114 @@
+############## Fichier du premier serveur ###################
+authoritative;
+ddns-update-style none;
+
+failover peer "failover-domi" {
+        primary;
+        address 192.168.5.254;
+        port 520;
+        peer address 192.168.5.250;
+        peer port 520;
+        max-response-delay 60;
+        max-unacked-updates 10;
+        mclt 3600;
+        split 128;
+        load balance max seconds 3;
+}
+
+option domain-name-servers 10.10.0.1, 8.8.8.8;
+option ntp-servers 192.168.5.254, 192.168.5.250;
+
+default-lease-time 3600;
+max-lease-time 7200;
+
+log-facility local7;
+
+subnet 192.168.5.0 netmask 255.255.255.0 {
+        pool {
+                failover peer "failover-domi";
+                range 192.168.5.100 192.168.5.150;
+        }
+        option routers 192.168.5.2;
+        option subnet-mask 255.255.255.0;
+        option broadcast-address 192.168.5.255;
+}
+
+
+
+
+###################### Fichier du second serveur #######################
+
+
+
+
+
+authoritative;
+ddns-update-style none;
+failover peer "failover-ksh-linux" {
+        primary;
+        address 192.168.5.254;
+        port 520;
+        peer address 192.168.5.250;
+        peer port 520;
+        max-response-delay 60;
+        max-unacked-updates 10;
+        mclt 3600;
+        split 128;
+        load balance max seconds 3;
+}
+option domain-name-servers 10.10.0.1, 8.8.8.8;
+option ntp-servers 192.168.5.254, 192.168.5.250;
+
+default-lease-time 3600;
+max-lease-time 7200;
+
+log-facility local7;
+subnet 192.168.5.0 netmask 255.255.255.0 {
+        pool {
+                failover peer 192.168.5.250;
+                range 192.168.2.100 192.168.2.150;
+        }
+        option routers 192.168.5.2;
+        option subnet-mask 255.255.255.0;
+        option broadcast-address 192.168.5.255;
+
+        #host machine-test {
+        #        hardware ethernet 01:02:03:04:05:06;
+        #        fixed-address 192.168.2.50;
+        #}
+}
+
+
+
+authoritative;
+ddns-update-style none;
+
+failover peer "failover-domi" {
+        secondary;
+        address 192.168.5.250;
+        port 520;
+        peer address 192.168.5.254;
+        peer port 520;
+        max-response-delay 60;
+        max-unacked-updates 10;
+        mclt 3600;
+        load balance max seconds 3; 
+}
+
+option domain-name-servers 10.10.0.1, 8.8.8.8;
+option ntp-servers 192.168.5.254, 192.168.5.250;
+
+default-lease-time 3600;
+max-lease-time 7200;
+
+log-facility local7;
+
+subnet 192.168.5.0 netmask 255.255.255.0 {
+        pool {
+                failover peer "failover-domi";
+                range 192.168.5.100 192.168.5.150;
+        }
+        option routers 192.168.5.2;
+        option subnet-mask 255.255.255.0;
+        option broadcast-address 192.168.5.255;
+}
